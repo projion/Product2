@@ -1,0 +1,125 @@
+﻿@model UnitInfoVM
+<style>
+    table, th, td {
+        border: 1px solid black;
+    }
+</style>
+@*
+<form>
+    <input type="text" id="EmployeeID" placeholder="Enter Employee ID" />
+    <input asp-controller="home" asp-action="ShowSalarywithBonus" type="submit" value="Employee ID" />
+    <input asp-controller="home" asp-action="ShowSalarywithBonus" type="submit" value="Show Salary with Bonus" />
+    <input type="submit" value="Highlight Salary" onclick="changeColorGreen();" />
+    <input type="submit" value="Highlight Name" onclick="changeColorBlue();" />
+    @*<input asp-controller="home" type="submit" value="Highlight Name" />
+
+</form>
+<a asp-action="EditRole" asp-route-id="@roleId"
+   class="btn btn-primary" style="width:auto">Cancel</a>*@
+
+<h1>Add or Update Procuct</h1>
+<div class="container">
+    <div class="row">
+        <div class="col-md-6">
+            <form method="post" asp-area="" asp-controller="ProductStock" asp-action="AddUpdateUnitInfo">
+                @Html.AntiForgeryToken()
+                <input type="hidden" , id="UnitId" , name="UnitId" />
+                <div class="row mb-3">
+                    <div class="col-12"><label for="UnitName">Product Name</label></div>
+                    <div class="col-12"><input type="text" class="form-control" name="UnitName" id="UnitName" placeholder="Enter Product Name" /> </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-12"><label for="Description">Description</label></div>
+                    <div class="col-12"><input type="text" class="form-control" name="Description" id="Description" placeholder="Enter Description" /> </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-12">
+                        <button type="submit" class="btn btn-success">Submit</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="col-md-6">
+            @{
+                if (TempData["SuccessMsg"] != null)
+                {
+                    <h2 class="bg-success">@TempData["SuccessMsg"]</h2>
+                }
+                if (TempData["ErrorMsg"] != null)
+                {
+                    <h2 class="bg-danger">@TempData["ErrorMsg"]</h2>
+                }
+
+            }
+        </div>
+    </div>
+</div>
+
+<h3>Details</h3>
+<div class="container">
+    <table class="table table-bordered">
+        <tr>
+            <th>Product Id</th>
+            <th>Product Name</th>
+            <th>Description</th>
+            <th>Setup Date</th>
+            <th>Update Date</th>
+            <th>Action</th>
+        </tr>
+        @{
+            if (Model.unitInfoList != null && Model.unitInfoList.Count > 0)
+            {
+                foreach (var item in Model.unitInfoList)
+                {
+                    <tr>
+                        <td>@item.UnitId</td>
+                        <td>@item.UnitName</td>
+                        <td>@item.Description</td>
+                        <td>@item.CreateDate.ToString("dd-MMM-yyy")</td>
+                        <td>@item.UpdateDate.ToString("dd-MMM-yyy")</td>
+                        <td>
+                            <a onclick="DeleteStudentRecord('@item.UnitId')" style="cursor:pointer">Delete</a> &nbsp;&nbsp;&nbsp;
+                            <a onclick="UpdateStudentRecord('@item.UnitId','@item.UnitName','@item.Description','@item.UpdateDate')" style="cursor:pointer">Edit</a>
+                        </td>
+                    </tr>
+                }
+            }
+
+
+
+
+        }
+    </table>
+</div>
+<script type="text/javascript">
+    function DeleteStudentRecord(UnitId) {
+        let response = confirm("Do you want to delete this record")
+        if (response) {
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("DeleteUnitInfo","ProductStock")',
+                data: { UnitId: UnitId },
+
+                success: function (response) {
+                    if (response.message == "Delete Successfully") {
+                        window.location.reload();
+                    }
+                    else {
+                        alert(response.message)
+                    }
+                },
+                complete: function () { },
+                failure: function (jqXHR, textStatus, errorThrown) {
+                    alert("Error Occured! Please try again");
+                }
+            });
+        }
+
+    }
+    function UpdateStudentRecord(UnitId, UnitName, Description, UpdateDate) {
+        $('#UnitId').val(UnitId);
+        $('#UnitName').val(UnitName);
+        $('#Description').val(Description);
+        $('#UpdateDate').val(UpdateDate);
+    }
+</script>
